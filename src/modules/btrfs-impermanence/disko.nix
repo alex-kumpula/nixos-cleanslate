@@ -7,9 +7,9 @@
     };
   };
 
-  imports = [
-    inputs.disko.flakeModules.default
-  ];
+  # imports = [
+  #   inputs.disko.flakeModules.default
+  # ];
 
   # flake.modules.nixos.btrfs-impermanence = {
   #   imports = [
