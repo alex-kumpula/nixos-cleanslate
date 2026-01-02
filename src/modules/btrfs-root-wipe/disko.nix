@@ -11,7 +11,7 @@
     inputs.disko.flakeModules.default
   ];
 
-  flake.modules.nixos.btrfs-impermanence = {
+  flake.modules.nixos.btrfs-root-wipe = {
     imports = [
       inputs.disko.nixosModules.default
     ];

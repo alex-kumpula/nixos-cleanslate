@@ -4,7 +4,7 @@
     system = "x86_64-linux";
     modules = with inputs.self.modules.nixos; [ 
       example-host
-      btrfs-impermanence
+      btrfs-root-wipe
     ];
   };
 }

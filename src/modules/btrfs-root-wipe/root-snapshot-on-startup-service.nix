@@ -1,6 +1,6 @@
 { inputs, config, lib, ... }:
 {
-  flake.modules.nixos.btrfs-impermanence =
+  flake.modules.nixos.btrfs-root-wipe =
   { pkgs, ... }:
   let
     btrfsProgs = pkgs.btrfs-progs;

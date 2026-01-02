@@ -3,20 +3,20 @@
 
 { inputs, ... }:
 {
-  flake.modules.nixos.btrfs-impermanence = {
+  flake.modules.nixos.btrfs-root-wipe = {
     imports = [
       inputs.self.diskoConfigurations.btrfs-impermanence-disk
     ];
   };
 
   flake.diskoConfigurations.btrfs-impermanence-disk = 
-    { config, options, ... }: 
+    { config, ... }: 
     {
       config = {
         disko.devices = {
           disk = {
             main = {
-              device = config.mainDisk;
+              device = config.btrfs-root-wipe.mainDisk;
               type = "disk";
               content = {
                 type = "gpt";
