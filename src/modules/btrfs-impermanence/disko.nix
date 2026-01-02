@@ -7,13 +7,13 @@
     };
   };
 
-  # imports = [
-  #   inputs.disko.flakeModules.default
-  # ];
+  imports = [
+    inputs.disko.flakeModules.default
+  ];
 
-  # flake.modules.nixos.btrfs-impermanence = {
-  #   imports = [
-  #     inputs.disko.nixosModules.default
-  #   ];
-  # };
+  flake.modules.nixos.btrfs-impermanence = {
+    imports = [
+      inputs.disko.nixosModules.default
+    ];
+  };
 }
