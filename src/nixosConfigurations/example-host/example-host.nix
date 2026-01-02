@@ -1,6 +1,6 @@
 { inputs, ... }:
 {
-  flake.nixosConfigurations.example-host2 = inputs.nixpkgs.lib.nixosSystem {
+  flake.nixosConfigurations.example-host = inputs.nixpkgs.lib.nixosSystem {
     system = "x86_64-linux";
     modules = with inputs.self.modules.nixos; [ 
       example-host
