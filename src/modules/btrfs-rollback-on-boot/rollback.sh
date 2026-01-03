@@ -22,7 +22,6 @@ echo "SV_PERSIST_PATH_ON_DEVICE = $SV_PERSIST_PATH_ON_DEVICE" # eg. /persistent
 echo "SV_PERSIST_NAME = $SV_PERSIST_NAME" # eg. persistent
 echo "SV_PERSIST_MOUNTED_PATH = $SV_PERSIST_MOUNTED_PATH" # eg. /btrfs_rollback_mounts/root-wipe-service_mount/persistent
 
-echo "SNAPSHOTS_DIR = $SNAPSHOTS_DIR" # eg. /snapshots
 echo "SNAPSHOT_DIR_MNT_PATH = $SNAPSHOT_DIR_MNT_PATH" # eg. /btrfs_rollback_mounts/root-wipe-service_mount/persistent/snapshots
 
 # Mount the BTRFS filesystem root

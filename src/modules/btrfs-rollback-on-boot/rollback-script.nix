@@ -44,7 +44,7 @@
                 SV_PERSIST_MOUNTED_PATH="$BTRFS_MNT_POINT$SV_PERSIST_PATH_ON_DEVICE"
 
                 SNAPSHOT_DIR="/snapshots"
-                SNAPSHOT_DIR_MNT_PATH="$BTRFS_MNT_POINT$SV_PERSIST_PATH_ON_DEVICE$SNAPSHOTS_DIR"
+                SNAPSHOT_DIR_MNT_PATH="$BTRFS_MNT_POINT$SV_PERSIST_PATH_ON_DEVICE$SNAPSHOT_DIR"
                 
 
               '' + rollbackScriptContent
