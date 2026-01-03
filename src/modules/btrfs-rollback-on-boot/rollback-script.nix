@@ -72,23 +72,23 @@
           lib.nameValuePair name scriptPackage
       ) cfg.services;
 
-      # 2. Extract the generated scripts and add them to extraBin
-      # We use lib.mapAttrs to transform the attribute set into the required format.
-      # The result is merged with the existing 'extraBin' set (which contains 'grep').
-      boot.initrd.systemd.extraBin = (
-        { grep = "${pkgs.gnugrep}/bin/grep"; } // # Start with existing bins
+      # # 2. Extract the generated scripts and add them to extraBin
+      # # We use lib.mapAttrs to transform the attribute set into the required format.
+      # # The result is merged with the existing 'extraBin' set (which contains 'grep').
+      # boot.initrd.systemd.extraBin = (
+      #   { grep = "${pkgs.gnugrep}/bin/grep"; } // # Start with existing bins
 
-        # Map over the generated scripts to create the key/value pairs needed for extraBin.
-        # extraBin expects { binName = packagePath; }
-        lib.listToAttrs (
-          lib.mapAttrsToList (
-            name: scriptPackage: {
-              name = name; # Use the service name as the final bin name
-              value = "${scriptPackage}/bin/rollback-${name}"; # The path string
-            }
-          ) cfg.rollbackServiceScripts
-        )
-      );
+      #   # Map over the generated scripts to create the key/value pairs needed for extraBin.
+      #   # extraBin expects { binName = packagePath; }
+      #   lib.listToAttrs (
+      #     lib.mapAttrsToList (
+      #       name: scriptPackage: {
+      #         name = name; # Use the service name as the final bin name
+      #         value = "${scriptPackage}/bin/rollback-${name}"; # The path string
+      #       }
+      #     ) cfg.rollbackServiceScripts
+      #   )
+      # );
 
     };
   };
