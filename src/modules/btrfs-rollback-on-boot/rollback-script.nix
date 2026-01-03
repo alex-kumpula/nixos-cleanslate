@@ -29,22 +29,22 @@
                 # --- Variables interpolated by Nix ---
                 #
 
-                SV_WIPE_DEVICE="${serviceCfg.subvolumeToWipe.device}"
+                # BTRFS file system
+                BTRFS_DEVICE="${serviceCfg.btrfsDevice}"
+                BTRFS_MNT_POINT="$/btrfs_rollback_mounts/${name}_mount"
+
+                # Subvolume to wipe
                 SV_WIPE_PATH_ON_DEVICE="${serviceCfg.subvolumeToWipe.path}"
                 SV_WIPE_NAME="${serviceCfg.subvolumeToWipe.name}"
-                SV_WIPE_DEVICE_TEMP_MOUNT_POINT="/subvolume-$SV_WIPE_NAME-mount_dir"
+                SV_WIPE_MOUNTED_PATH="$BTRFS_MNT_POINT$SV_WIPE_PATH_ON_DEVICE"
                 
-                SV_PERSIST_DEVICE="${serviceCfg.subvolumeForPersistence.device}"
+                # Subvolume for persistence
                 SV_PERSIST_PATH_ON_DEVICE="${serviceCfg.subvolumeForPersistence.path}"
                 SV_PERSIST_NAME="${serviceCfg.subvolumeForPersistence.name}"
-                SV_PERSIST_DEVICE_TEMP_MOUNT_POINT="/subvolume-$SV_PERSIST_NAME-mount_dir"
+                SV_PERSIST_MOUNTED_PATH="$BTRFS_MNT_POINT$SV_PERSIST_PATH_ON_DEVICE"
 
-                SV_WIPE_PATH="$SV_WIPE_DEVICE_TEMP_MOUNT_POINT$SV_WIPE_PATH_ON_DEVICE"
-                SV_PERSIST_PATH="$SV_PERSIST_DEVICE_TEMP_MOUNT_POINT$SV_PERSIST_PATH_ON_DEVICE"
-
-                SNAPSHOT_PATH_IN_SV_PERSIST="/snapshots"
-                SNAPSHOTS_DIR="$SV_PERSIST_PATH$SNAPSHOT_PATH_IN_SV_PERSIST"
-
+                SNAPSHOT_DIR="/snapshots"
+                SNAPSHOT_DIR_MNT_PATH="$BTRFS_MNT_POINT$SV_PERSIST_PATH_ON_DEVICE$SNAPSHOTS_DIR"
                 
 
               '' + rollbackScriptContent

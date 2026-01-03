@@ -17,14 +17,14 @@
         
         # Optional: Explicitly enable this specific service (default is true)
         enable = true;
+
+        btrfsDevice = "/dev/mapper/root_vg-root"; 
         
         # Optional: Control whether snapshots are created (default is true)
         createSnapshots = true;
         
         # --- Configuration for the Subvolume to be Wiped (The Root) ---
         subvolumeToWipe = {
-          # The physical disk partition where the Btrfs filesystem resides
-          device = "/dev/mapper/root_vg-root"; 
           
           # The path to the subvolume from the Btrfs root (ID 5)
           path = "/root"; 
@@ -38,9 +38,7 @@
         
         # --- Configuration for the Persistence Subvolume (Snapshot Storage) ---
         subvolumeForPersistence = {
-          # The device must match the wipe device if they are on the same Btrfs volume
-          device = "/dev/mapper/root_vg-root"; 
-          
+
           # The path to the persistence subvolume from the Btrfs root (ID 5)
           path = "/persistent"; 
           

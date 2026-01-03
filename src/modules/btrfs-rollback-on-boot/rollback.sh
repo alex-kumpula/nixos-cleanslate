@@ -11,81 +11,73 @@ echo "btrfs-rollback-on-boot: Rolling back $SV_WIPE_NAME..." >/dev/kmsg
 
 echo "THIS IS A TEST logger"
 
-echo "SV_WIPE_DEVICE = $SV_WIPE_DEVICE"
-echo "SV_WIPE_PATH_ON_DEVICE = $SV_WIPE_PATH_ON_DEVICE"
-echo "SV_WIPE_NAME = $SV_WIPE_NAME"
-echo "SV_WIPE_DEVICE_TEMP_MOUNT_POINT = $SV_WIPE_DEVICE_TEMP_MOUNT_POINT"
-echo "SV_WIPE_PATH = $SV_WIPE_PATH"
+echo "BTRFS_DEVICE = $BTRFS_DEVICE" # eg. /dev/mapper/root_vg-root
+echo "BTRFS_MNT_POINT = $BTRFS_MNT_POINT" # eg. /btrfs_rollback_mounts/root-wipe-service_mount
 
-echo "SV_PERSIST_DEVICE = $SV_PERSIST_DEVICE"
-echo "SV_PERSIST_PATH_ON_DEVICE = $SV_PERSIST_PATH_ON_DEVICE"
-echo "SV_PERSIST_NAME = $SV_PERSIST_NAME"
-echo "SV_PERSIST_DEVICE_TEMP_MOUNT_POINT = $SV_PERSIST_DEVICE_TEMP_MOUNT_POINT"
-echo "SV_PERSIST_PATH = $SV_PERSIST_PATH"
+echo "SV_WIPE_PATH_ON_DEVICE = $SV_WIPE_PATH_ON_DEVICE" # eg. /root
+echo "SV_WIPE_NAME = $SV_WIPE_NAME" # eg. root
+echo "SV_WIPE_MOUNTED_PATH = $SV_WIPE_MOUNTED_PATH" # eg. /btrfs_rollback_mounts/root-wipe-service_mount/root
 
-echo "SNAPSHOT_PATH_IN_SV_PERSIST = $SNAPSHOT_PATH_IN_SV_PERSIST"
-echo "SNAPSHOTS_DIR = $SNAPSHOTS_DIR"
+echo "SV_PERSIST_PATH_ON_DEVICE = $SV_PERSIST_PATH_ON_DEVICE" # eg. /persistent
+echo "SV_PERSIST_NAME = $SV_PERSIST_NAME" # eg. persistent
+echo "SV_PERSIST_MOUNTED_PATH = $SV_PERSIST_MOUNTED_PATH" # eg. /btrfs_rollback_mounts/root-wipe-service_mount/persistent
 
+echo "SNAPSHOTS_DIR = $SNAPSHOTS_DIR" # eg. /snapshots
+echo "SNAPSHOT_DIR_MNT_PATH = $SNAPSHOT_DIR_MNT_PATH" # eg. /btrfs_rollback_mounts/root-wipe-service_mount/persistent/snapshots
 
-mkdir $SV_WIPE_DEVICE_TEMP_MOUNT_POINT
-mount $SV_WIPE_DEVICE $SV_WIPE_DEVICE_TEMP_MOUNT_POINT
+# Mount the BTRFS filesystem root
+mkdir -p $BTRFS_MNT_POINT
+echo "Attempting to mount BTRFS device $BTRFS_DEVICE at $BTRFS_MNT_POINT..."
+if ! mount $BTRFS_DEVICE $BTRFS_MNT_POINT; then
+    echo "ERROR: Failed to mount BTRFS device $BTRFS_DEVICE at $BTRFS_MNT_POINT."
+    exit 1
+else
+    echo "Succesfully mounted BTRFS device $BTRFS_DEVICE at $BTRFS_MNT_POINT."
+fi
 
-mkdir $SV_PERSIST_DEVICE_TEMP_MOUNT_POINT
-mount $SV_PERSIST_DEVICE $SV_PERSIST_DEVICE_TEMP_MOUNT_POINT
+# Check if the mounted subvolume directory exists
+if [[ -d $SV_WIPE_MOUNTED_PATH ]]; then
 
+    mkdir -p $SNAPSHOT_DIR_MNT_PATH
 
+    # Get the timestamp of the wipe subvolume (when it was last modified)
+    timestamp=$(date --date="@$(stat -c %Y $SV_WIPE_MOUNTED_PATH)" "+%Y-%m-%d_%H:%M:%S")
 
-
-# --- Previous Subvolume Backup (The "Explosion") ---
-
-if [[ -e $SV_WIPE_PATH ]]; then
-
-    mkdir -p $SNAPSHOTS_DIR
-
-    timestamp=$(date --date="@$(stat -c %Y $SV_WIPE_PATH)" "+%Y-%m-%d_%H:%M:%S")
     SNAPSHOT_NAME="snapshot-$SV_WIPE_NAME-$timestamp" # e.g. "snapshot-root-2026-01-02_19:39:43"
-    FULL_SNAPSHOT_PATH="$SNAPSHOTS_DIR/$SNAPSHOT_NAME"
+    FULL_SNAPSHOT_PATH="$SNAPSHOT_DIR_MNT_PATH/$SNAPSHOT_NAME"
 
     echo "SNAPSHOT_NAME = $SNAPSHOT_NAME"
     echo "FULL_SNAPSHOT_PATH = $FULL_SNAPSHOT_PATH"
 
+    echo "Attempting to create a snapshot of the subvolume at $SV_WIPE_MOUNTED_PATH..."
+    if btrfs subvolume snapshot -r "$SV_WIPE_MOUNTED_PATH" "$FULL_SNAPSHOT_PATH"; then
+        echo "Successfully created snapshot for $SV_WIPE_MOUNTED_PATH. The snapshot is located at $FULL_SNAPSHOT_PATH."
+    else    
+        echo "ERROR: Snapshot creation failed for $SV_WIPE_MOUNTED_PATH."
+        exit 1
+    fi
 
-    # SNAPSHOT_PATH="$SNAPSHOTS_DIR/$timestamp"
-    
-    # if [[ ! -e $SNAPSHOT_PATH ]]; then
-    
-    #     mv $SV_WIPE_PATH $SNAPSHOT_PATH
-
-    # else
-    
-    #     btrfs subvolume delete $SV_WIPE_PATH
-    # fi
-
-
-
-
-
-    # This command moves the subvolume to a new location in one atomic Btrfs operation.
-    # This is essentially the Btrfs equivalent of 'mv' for a subvolume.
-    # It is also much safer than operating on immutable files.
-    echo "btrfs-rollback-on-boot: Creating snapshot/backup of old root at $FULL_SNAPSHOT_PATH..." >/dev/kmsg
-    btrfs subvolume snapshot -r "$SV_WIPE_PATH" "$FULL_SNAPSHOT_PATH"
-    
-    # Delete the old, writable subvolume
-    echo "btrfs-rollback-on-boot: Deleting old subvolume $SV_WIPE_PATH..." >/dev/kmsg
-    btrfs subvolume delete "$SV_WIPE_PATH"
+    echo "Attempting to delete the subvolume at $SV_WIPE_MOUNTED_PATH..."
+    if btrfs subvolume delete "$SV_WIPE_MOUNTED_PATH"; then
+        echo "Deletion of $SV_WIPE_MOUNTED_PATH was a success."
+    else
+        echo "ERROR: Deletion of $SV_WIPE_MOUNTED_PATH failed."
+        exit 1
+    fi
 fi
 
 # --- Create new subvolume and unmount ---
 
-btrfs subvolume create $SV_WIPE_PATH
+echo "Attempting to recreate a new subvolume at $SV_WIPE_MOUNTED_PATH..."
+if btrfs subvolume create "$SV_WIPE_MOUNTED_PATH"; then
+    echo "Subvolume creation succeeded for $SV_WIPE_MOUNTED_PATH."
+else
+    echo "ERROR: Subvolume creation failed for $SV_WIPE_MOUNTED_PATH."
+    exit 1
+fi
 
-umount $SV_WIPE_DEVICE_TEMP_MOUNT_POINT
-umount $SV_PERSIST_DEVICE_TEMP_MOUNT_POINT
+umount $BTRFS_MNT_POINT
+echo "btrfs-rollback-on-boot: Done rolling back $SV_WIPE_NAME!"
 
-
-
-# Log a successful completion message to the kernel message buffer.
-echo "btrfs-rollback-on-boot: Done rolling back $SV_WIPE_NAME!" >/dev/kmsg
 
 # --- END OF SCRIPT ---

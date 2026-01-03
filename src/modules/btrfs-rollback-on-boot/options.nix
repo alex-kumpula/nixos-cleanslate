@@ -24,16 +24,16 @@
               default = true;
               description = "Enable Btrfs filesystem management.";
             };
+
+            btrfsDevice = lib.mkOption {
+              type = lib.types.str;
+              description = "The device containing the root of the Btrfs filesystem.";
+            };
             
             subvolumeToWipe = lib.mkOption {
               description = "The subvolume to wipe on startup.";
               type = lib.types.submodule {
                 options = {
-
-                  device = lib.mkOption {
-                    type = lib.types.str;
-                    description = "The Btrfs device containing the subvolume.";
-                  };
 
                   path = lib.mkOption {
                     type = lib.types.str;
@@ -68,11 +68,6 @@
               '';
               type = lib.types.submodule {
                 options = {
-
-                  device = lib.mkOption {
-                    type = lib.types.str;
-                    description = "The Btrfs device containing the subvolume.";
-                  };
 
                   path = lib.mkOption {
                     type = lib.types.str;
