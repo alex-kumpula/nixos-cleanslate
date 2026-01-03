@@ -26,16 +26,31 @@ if [[ -e $SV_WIPE_PATH ]]; then
     mkdir -p $SNAPSHOTS_DIR
 
     timestamp=$(date --date="@$(stat -c %Y $SV_WIPE_PATH)" "+%Y-%m-%d_%H:%M:%S")
-    SNAPSHOT_PATH="$SNAPSHOTS_DIR/$timestamp"
-    
-    if [[ ! -e $SNAPSHOT_PATH ]]; then
-    
-        mv $SV_WIPE_PATH $SNAPSHOT_PATH
+    SNAPSHOT_NAME="snapshot-$SV_WIPE_NAME-$timestamp" # e.g. "snapshot-root-2026-01-02_19:39:43"
+    FULL_SNAPSHOT_PATH="$SNAPSHOTS_DIR/$SNAPSHOT_NAME"
 
-    else
+
+    # SNAPSHOT_PATH="$SNAPSHOTS_DIR/$timestamp"
     
-        btrfs subvolume delete $SV_WIPE_PATH
-    fi
+    # if [[ ! -e $SNAPSHOT_PATH ]]; then
+    
+    #     mv $SV_WIPE_PATH $SNAPSHOT_PATH
+
+    # else
+    
+    #     btrfs subvolume delete $SV_WIPE_PATH
+    # fi
+
+
+    # This command moves the subvolume to a new location in one atomic Btrfs operation.
+    # This is essentially the Btrfs equivalent of 'mv' for a subvolume.
+    # It is also much safer than operating on immutable files.
+    echo "btrfs-rollback-on-boot: Creating snapshot/backup of old root at $FULL_SNAPSHOT_PATH..." >/dev/kmsg
+    btrfs subvolume snapshot -r "$SV_WIPE_PATH" "$FULL_SNAPSHOT_PATH"
+    
+    # Delete the old, writable subvolume
+    echo "btrfs-rollback-on-boot: Deleting old subvolume $SV_WIPE_PATH..." >/dev/kmsg
+    btrfs subvolume delete "$SV_WIPE_PATH"
 fi
 
 # --- Create new subvolume and unmount ---
