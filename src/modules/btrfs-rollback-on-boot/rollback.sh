@@ -3,30 +3,31 @@
 # NOTE: Nix expressions (${...}) are NOT used in this file.
 # Variables are passed to this script by Nix.
 
+$LOG_INFO="logger -t btrfs-rollback -p user.info"
 
 # Log a starting message to the kernel message buffer (kmsg), visible via dmesg.
-echo "btrfs-rollback-on-boot: Rolling back $SV_WIPE_NAME..." >/dev/kmsg
+$LOG_INFO "btrfs-rollback-on-boot: Rolling back $SV_WIPE_NAME..." >/dev/kmsg
 
 # --- Mount Btrfs Volumes ---
 
-echo "THIS IS A TEST"
+$LOG_INFO "THIS IS A TEST"
 
 
 # echo all variables to kmsg
-echo "SV_WIPE_DEVICE = $SV_WIPE_DEVICE" >/dev/kmsg
-echo "SV_WIPE_PATH_ON_DEVICE = $SV_WIPE_PATH_ON_DEVICE" >/dev/kmsg
-echo "SV_WIPE_NAME = $SV_WIPE_NAME" >/dev/kmsg
-echo "SV_WIPE_DEVICE_TEMP_MOUNT_POINT = $SV_WIPE_DEVICE_TEMP_MOUNT_POINT" >/dev/kmsg
-echo "SV_WIPE_PATH = $SV_WIPE_PATH" >/dev/kmsg
+$LOG_INFO "SV_WIPE_DEVICE = $SV_WIPE_DEVICE"
+$LOG_INFO "SV_WIPE_PATH_ON_DEVICE = $SV_WIPE_PATH_ON_DEVICE"
+$LOG_INFO "SV_WIPE_NAME = $SV_WIPE_NAME"
+$LOG_INFO "SV_WIPE_DEVICE_TEMP_MOUNT_POINT = $SV_WIPE_DEVICE_TEMP_MOUNT_POINT"
+$LOG_INFO "SV_WIPE_PATH = $SV_WIPE_PATH"
 
-echo "SV_PERSIST_DEVICE = $SV_PERSIST_DEVICE" >/dev/kmsg
-echo "SV_PERSIST_PATH_ON_DEVICE = $SV_PERSIST_PATH_ON_DEVICE" >/dev/kmsg
-echo "SV_PERSIST_NAME = $SV_PERSIST_NAME" >/dev/kmsg
-echo "SV_PERSIST_DEVICE_TEMP_MOUNT_POINT = $SV_PERSIST_DEVICE_TEMP_MOUNT_POINT" >/dev/kmsg
-echo "SV_PERSIST_PATH = $SV_PERSIST_PATH" >/dev/kmsg
+$LOG_INFO "SV_PERSIST_DEVICE = $SV_PERSIST_DEVICE"
+$LOG_INFO "SV_PERSIST_PATH_ON_DEVICE = $SV_PERSIST_PATH_ON_DEVICE"
+$LOG_INFO "SV_PERSIST_NAME = $SV_PERSIST_NAME"
+$LOG_INFO "SV_PERSIST_DEVICE_TEMP_MOUNT_POINT = $SV_PERSIST_DEVICE_TEMP_MOUNT_POINT"
+$LOG_INFO "SV_PERSIST_PATH = $SV_PERSIST_PATH"
 
-echo "SNAPSHOT_PATH_IN_SV_PERSIST = $SNAPSHOT_PATH_IN_SV_PERSIST" >/dev/kmsg
-echo "SNAPSHOTS_DIR = $SNAPSHOTS_DIR" >/dev/kmsg
+$LOG_INFO "SNAPSHOT_PATH_IN_SV_PERSIST = $SNAPSHOT_PATH_IN_SV_PERSIST"
+$LOG_INFO "SNAPSHOTS_DIR = $SNAPSHOTS_DIR"
 
 
 mkdir $SV_WIPE_DEVICE_TEMP_MOUNT_POINT
@@ -48,8 +49,8 @@ if [[ -e $SV_WIPE_PATH ]]; then
     SNAPSHOT_NAME="snapshot-$SV_WIPE_NAME-$timestamp" # e.g. "snapshot-root-2026-01-02_19:39:43"
     FULL_SNAPSHOT_PATH="$SNAPSHOTS_DIR/$SNAPSHOT_NAME"
 
-    echo "SNAPSHOT_NAME = $SNAPSHOT_NAME" >/dev/kmsg
-    echo "FULL_SNAPSHOT_PATH = $FULL_SNAPSHOT_PATH" >/dev/kmsg
+    $LOG_INFO "SNAPSHOT_NAME = $SNAPSHOT_NAME"
+    $LOG_INFO "FULL_SNAPSHOT_PATH = $FULL_SNAPSHOT_PATH"
 
 
     # SNAPSHOT_PATH="$SNAPSHOTS_DIR/$timestamp"

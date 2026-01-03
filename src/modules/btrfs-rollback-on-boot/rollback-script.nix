@@ -58,7 +58,11 @@
       # We use lib.mapAttrs to transform the attribute set into the required format.
       # The result is merged with the existing 'extraBin' set (which contains 'grep').
       boot.initrd.systemd.extraBin = (
-        { grep = "${pkgs.gnugrep}/bin/grep"; } // # Start with existing bins
+        { 
+          grep = "${pkgs.gnugrep}/bin/grep"; 
+          logger = "${pkgs.util-linux}/bin/logger";
+        } // # Start with existing bins
+        
 
         # Map over the generated scripts to create the key/value pairs needed for extraBin.
         # extraBin expects { binName = packagePath; }
