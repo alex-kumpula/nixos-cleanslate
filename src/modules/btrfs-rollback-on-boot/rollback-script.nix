@@ -31,7 +31,7 @@
 
                 # BTRFS file system
                 BTRFS_DEVICE="${serviceCfg.btrfsDevice}"
-                BTRFS_MNT_POINT="$/btrfs_rollback_mounts/${name}_mount"
+                BTRFS_MNT_POINT="/btrfs_rollback_mounts/${name}_mount"
 
                 # Subvolume to wipe
                 SV_WIPE_PATH_ON_DEVICE="${serviceCfg.subvolumeToWipe.path}"
