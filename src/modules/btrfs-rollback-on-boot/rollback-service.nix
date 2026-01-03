@@ -9,7 +9,7 @@
     config = lib.mkIf cfg.enable {
 
       boot.initrd.systemd.services = lib.mapAttrs' (
-        name: serviceCfg: lib.nameValuePair "btrfs-rollback-${name}" {
+        name: serviceCfg: lib.nameValuePair "${name}" {
           
           wantedBy = ["initrd-root-device.target"];
           wants = ["lvm2-activation.service"];
