@@ -48,21 +48,41 @@ if [[ -d $SV_WIPE_MOUNTED_PATH ]]; then
     echo "SNAPSHOT_NAME = $SNAPSHOT_NAME"
     echo "FULL_SNAPSHOT_PATH = $FULL_SNAPSHOT_PATH"
 
-    echo "Attempting to create a snapshot of the subvolume at $SV_WIPE_MOUNTED_PATH..."
-    if btrfs subvolume snapshot -r "$SV_WIPE_MOUNTED_PATH" "$FULL_SNAPSHOT_PATH"; then
-        echo "Successfully created snapshot for $SV_WIPE_MOUNTED_PATH. The snapshot is located at $FULL_SNAPSHOT_PATH."
-    else    
-        echo "ERROR: Snapshot creation failed for $SV_WIPE_MOUNTED_PATH."
-        # exit 1
-    fi
+    LOCAL_SNAPSHOT_PATH="$BTRFS_MNT_POINT/old-root-temp-snapshot"
 
-    echo "Attempting to delete the subvolume at $SV_WIPE_MOUNTED_PATH..."
-    if btrfs subvolume delete "$SV_WIPE_MOUNTED_PATH"; then
-        echo "Deletion of $SV_WIPE_MOUNTED_PATH was a success."
-    else
-        echo "ERROR: Deletion of $SV_WIPE_MOUNTED_PATH failed."
+    echo "Attempting to create local read-only snapshot for backup..."
+    if ! btrfs subvolume snapshot -r "$SV_WIPE_MOUNTED_PATH" "$LOCAL_SNAPSHOT_PATH"; then
+        echo "ERROR: Local snapshot creation failed for $SV_WIPE_MOUNTED_PATH."
         exit 1
     fi
+
+    echo "Attempting to atomically rename (move) the old subvolume to $FULL_SNAPSHOT_PATH..."
+    if mv "$SV_WIPE_MOUNTED_PATH" "$FULL_SNAPSHOT_PATH"; then
+        echo "Successfully renamed old subvolume to $FULL_SNAPSHOT_PATH. Rollback complete."
+    else
+        echo "ERROR: Renaming (mv) of $SV_WIPE_MOUNTED_PATH failed. Deleting local snapshot."
+        # If mv fails, delete the local snapshot to clean up
+        btrfs subvolume delete "$LOCAL_SNAPSHOT_PATH" || true
+        exit 1
+    fi
+
+
+
+    # echo "Attempting to create a snapshot of the subvolume at $SV_WIPE_MOUNTED_PATH..."
+    # if btrfs subvolume snapshot -r "$SV_WIPE_MOUNTED_PATH" "$FULL_SNAPSHOT_PATH"; then
+    #     echo "Successfully created snapshot for $SV_WIPE_MOUNTED_PATH. The snapshot is located at $FULL_SNAPSHOT_PATH."
+    # else    
+    #     echo "ERROR: Snapshot creation failed for $SV_WIPE_MOUNTED_PATH."
+    #     # exit 1
+    # fi
+
+    # echo "Attempting to delete the subvolume at $SV_WIPE_MOUNTED_PATH..."
+    # if btrfs subvolume delete "$SV_WIPE_MOUNTED_PATH"; then
+    #     echo "Deletion of $SV_WIPE_MOUNTED_PATH was a success."
+    # else
+    #     echo "ERROR: Deletion of $SV_WIPE_MOUNTED_PATH failed."
+    #     exit 1
+    # fi
 fi
 
 # --- Create new subvolume and unmount ---
