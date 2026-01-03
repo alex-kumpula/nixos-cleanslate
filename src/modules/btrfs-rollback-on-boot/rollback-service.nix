@@ -1,7 +1,7 @@
 { inputs, config, lib, ... }:
 {
   flake.modules.nixos.btrfs-rollback-on-boot =
-  { lib, pkgs, ... }:
+  { lib, pkgs, config, ... }:
   let 
       cfg = config.btrfs-rollback-on-boot;
   in
