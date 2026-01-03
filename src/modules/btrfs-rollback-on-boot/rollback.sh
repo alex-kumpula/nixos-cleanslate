@@ -9,15 +9,32 @@ echo "btrfs-rollback-on-boot: Rolling back $SV_WIPE_NAME..." >/dev/kmsg
 
 # --- Mount Btrfs Volumes ---
 
+
+# echo all variables to kmsg
+echo "SV_WIPE_DEVICE = $SV_WIPE_DEVICE" >/dev/kmsg
+echo "SV_WIPE_PATH_ON_DEVICE = $SV_WIPE_PATH_ON_DEVICE" >/dev/kmsg
+echo "SV_WIPE_NAME = $SV_WIPE_NAME" >/dev/kmsg
+echo "SV_WIPE_DEVICE_TEMP_MOUNT_POINT = $SV_WIPE_DEVICE_TEMP_MOUNT_POINT" >/dev/kmsg
+echo "SV_WIPE_PATH = $SV_WIPE_PATH" >/dev/kmsg
+
+echo "SV_PERSIST_DEVICE = $SV_PERSIST_DEVICE" >/dev/kmsg
+echo "SV_PERSIST_PATH_ON_DEVICE = $SV_PERSIST_PATH_ON_DEVICE" >/dev/kmsg
+echo "SV_PERSIST_NAME = $SV_PERSIST_NAME" >/dev/kmsg
+echo "SV_PERSIST_DEVICE_TEMP_MOUNT_POINT = $SV_PERSIST_DEVICE_TEMP_MOUNT_POINT" >/dev/kmsg
+echo "SV_PERSIST_PATH = $SV_PERSIST_PATH" >/dev/kmsg
+
+echo "SNAPSHOT_PATH_IN_SV_PERSIST = $SNAPSHOT_PATH_IN_SV_PERSIST" >/dev/kmsg
+echo "SNAPSHOTS_DIR = $SNAPSHOTS_DIR" >/dev/kmsg
+
+
 mkdir $SV_WIPE_DEVICE_TEMP_MOUNT_POINT
 mount $SV_WIPE_DEVICE $SV_WIPE_DEVICE_TEMP_MOUNT_POINT
-SV_WIPE_PATH="$SV_WIPE_DEVICE_TEMP_MOUNT_POINT$SV_WIPE_PATH_ON_DEVICE"
 
 mkdir $SV_PERSIST_DEVICE_TEMP_MOUNT_POINT
 mount $SV_PERSIST_DEVICE $SV_PERSIST_DEVICE_TEMP_MOUNT_POINT
-SV_PERSIST_PATH="$SV_PERSIST_DEVICE_TEMP_MOUNT_POINT$SV_PERSIST_PATH_ON_DEVICE"
 
-SNAPSHOTS_DIR="$SV_PERSIST_PATH$SNAPSHOT_PATH_IN_SV_PERSIST"
+
+
 
 # --- Previous Subvolume Backup (The "Explosion") ---
 
@@ -28,6 +45,9 @@ if [[ -e $SV_WIPE_PATH ]]; then
     timestamp=$(date --date="@$(stat -c %Y $SV_WIPE_PATH)" "+%Y-%m-%d_%H:%M:%S")
     SNAPSHOT_NAME="snapshot-$SV_WIPE_NAME-$timestamp" # e.g. "snapshot-root-2026-01-02_19:39:43"
     FULL_SNAPSHOT_PATH="$SNAPSHOTS_DIR/$SNAPSHOT_NAME"
+
+    echo "SNAPSHOT_NAME = $SNAPSHOT_NAME" >/dev/kmsg
+    echo "FULL_SNAPSHOT_PATH = $FULL_SNAPSHOT_PATH" >/dev/kmsg
 
 
     # SNAPSHOT_PATH="$SNAPSHOTS_DIR/$timestamp"
@@ -40,6 +60,9 @@ if [[ -e $SV_WIPE_PATH ]]; then
     
     #     btrfs subvolume delete $SV_WIPE_PATH
     # fi
+
+
+
 
 
     # This command moves the subvolume to a new location in one atomic Btrfs operation.

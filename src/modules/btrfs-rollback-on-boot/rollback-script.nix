@@ -39,7 +39,13 @@
                 SV_PERSIST_NAME="${serviceCfg.subvolumeForPersistence.name}"
                 SV_PERSIST_DEVICE_TEMP_MOUNT_POINT="/subvolume-$SV_PERSIST_NAME-mount_dir"
 
+                SV_WIPE_PATH="$SV_WIPE_DEVICE_TEMP_MOUNT_POINT$SV_WIPE_PATH_ON_DEVICE"
+                SV_PERSIST_PATH="$SV_PERSIST_DEVICE_TEMP_MOUNT_POINT$SV_PERSIST_PATH_ON_DEVICE"
+
                 SNAPSHOT_PATH_IN_SV_PERSIST="/snapshots"
+                SNAPSHOTS_DIR="$SV_PERSIST_PATH$SNAPSHOT_PATH_IN_SV_PERSIST"
+
+                
 
               '' + rollbackScriptContent
             )
