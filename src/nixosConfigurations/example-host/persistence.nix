@@ -23,6 +23,10 @@
           # "/var/lib/logrotate.status" # TODO: doesn't play nicely with the service yet
         ];
       };
+
+      fileSystems."/persistent" = {
+        neededForBoot = true;
+      };
     };
 }
 
