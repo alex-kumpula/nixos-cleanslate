@@ -31,9 +31,6 @@
           
           # A simple name for internal reference (used in temp mount point names)
           name = "root"; 
-          
-          # The final mount point used by the system (usually / or a similar path)
-          mountPoint = "/"; 
         };
         
         # --- Configuration for the Persistence Subvolume (Snapshot Storage) ---
@@ -44,10 +41,6 @@
           
           # A simple name for internal reference
           name = "persistent"; 
-          
-          # The final mount point for persistent data 
-          # (The rollback service will use this for the /old_roots directory)
-          mountPoint = "/persistent"; 
         };
       };
       

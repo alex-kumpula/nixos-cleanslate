@@ -29,6 +29,31 @@
               type = lib.types.str;
               description = "The device containing the root of the Btrfs filesystem.";
             };
+
+            createSnapshots = lib.mkOption {
+              type = lib.types.bool;
+              default = true;
+              description = ''
+                Whether to create snapshots before wiping.
+              '';
+            };
+
+            garbageCollectSnapshots = lib.mkOption {
+              type = lib.types.bool;
+              default = true;
+              description = ''
+                Whether or not to delete snapshots older than
+                snapshotRetentionAmountOfDays.
+              '';
+            };
+
+            snapshotRetentionAmountOfDays = lib.mkOption {
+              type = lib.types.int;
+              default = 30;
+              description = ''
+                How many days to retain snapshots for.
+              '';
+            };
             
             subvolumeToWipe = lib.mkOption {
               description = "The subvolume to wipe on startup.";
@@ -44,22 +69,8 @@
                     type = lib.types.str;
                     description = "The name of the subvolume.";
                   };
-
-                  mountPoint = lib.mkOption {
-                    type = lib.types.str;
-                    description = "The mount point for the subvolume onto your system.";
-                  };
-
                 };
               };
-            };
-
-            createSnapshots = lib.mkOption {
-              type = lib.types.bool;
-              default = true;
-              description = ''
-                Whether to create snapshots before wiping.
-              '';
             };
 
             subvolumeForPersistence = lib.mkOption {
@@ -78,12 +89,6 @@
                     type = lib.types.str;
                     description = "The name of the subvolume.";
                   };
-
-                  mountPoint = lib.mkOption {
-                    type = lib.types.str;
-                    description = "The mount point for the subvolume.";
-                  };
-
                 };
               };
             };

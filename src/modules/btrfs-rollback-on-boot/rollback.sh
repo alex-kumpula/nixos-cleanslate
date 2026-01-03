@@ -17,7 +17,7 @@ echo "SV_PERSIST_MOUNTED_PATH = $SV_PERSIST_MOUNTED_PATH" # eg. /btrfs_rollback_
 
 echo "SNAPSHOT_DIR_MNT_PATH = $SNAPSHOT_DIR_MNT_PATH" # eg. /btrfs_rollback_mounts/root-wipe-service_mount/persistent/snapshots
 
-
+echo "CREATE_SNAPSHOTS = $CREATE_SNAPSHOTS"
 
 
 ## --- Prepare to Access Btrfs Volume ---
@@ -36,31 +36,36 @@ echo "Successfully mounted Btrfs volume."
 echo "Checking for existing subvolume to wipe at $SV_WIPE_MOUNTED_PATH..."
 if [[ -e $SV_WIPE_MOUNTED_PATH ]]; then
     
-    echo "Existing subvolume found. Preparing backup structure."
-    # Create the directory structure where old root snapshots will be moved/stored.
-    mkdir -p $SNAPSHOT_DIR_MNT_PATH
-    echo "Ensured snapshot directory exists: $SNAPSHOT_DIR_MNT_PATH"
-    
-    # Get the creation/modification time of the existing 'root' subvolume
-    timestamp=$(date --date="@$(stat -c %Y $SV_WIPE_MOUNTED_PATH)" "+%Y-%m-%d_%H:%M:%S")
-    SNAPSHOT_NAME="snapshot-$SV_WIPE_NAME-$timestamp"
-    FULL_SNAPSHOT_PATH="$SNAPSHOT_DIR_MNT_PATH/$SNAPSHOT_NAME"
-   
-    echo "Generated Snapshot Path: $FULL_SNAPSHOT_PATH"
-    
-    # Check if a backup with the exact same timestamp already exists.
-    if [[ ! -e $FULL_SNAPSHOT_PATH ]]; then
+    if $CREATE_SNAPSHOTS; then
+
+        echo "Existing subvolume found. Preparing backup structure."
+        # Create the directory structure where old root snapshots will be moved/stored.
+        mkdir -p $SNAPSHOT_DIR_MNT_PATH
+        echo "Ensured snapshot directory exists: $SNAPSHOT_DIR_MNT_PATH"
         
-        echo "Atomic rename (mv) starting: $SV_WIPE_MOUNTED_PATH -> $FULL_SNAPSHOT_PATH"
-        # If the timestamp is unique, rename the old 'root' subvolume
-        # to the timestamped backup location.
-        mv $SV_WIPE_MOUNTED_PATH $FULL_SNAPSHOT_PATH
-        echo "Rename successful. Old subvolume saved."
+        # Get the creation/modification time of the existing 'root' subvolume
+        timestamp=$(date --date="@$(stat -c %Y $SV_WIPE_MOUNTED_PATH)" "+%Y-%m-%d_%H:%M:%S")
+        SNAPSHOT_NAME="snapshot-$SV_WIPE_NAME-$timestamp"
+        FULL_SNAPSHOT_PATH="$SNAPSHOT_DIR_MNT_PATH/$SNAPSHOT_NAME"
+    
+        echo "Generated Snapshot Path: $FULL_SNAPSHOT_PATH"
+        
+        # Check if a backup with the exact same timestamp already exists.
+        if [[ ! -e $FULL_SNAPSHOT_PATH ]]; then
+            echo "Atomic rename (mv) starting: $SV_WIPE_MOUNTED_PATH -> $FULL_SNAPSHOT_PATH"
+            # If the timestamp is unique, rename the old 'root' subvolume
+            # to the timestamped backup location.
+            mv $SV_WIPE_MOUNTED_PATH $FULL_SNAPSHOT_PATH
+            echo "Rename successful. Old subvolume saved."
+        else
+            echo "Duplicate timestamp found. Deleting old subvolume: $SV_WIPE_MOUNTED_PATH"
+            # If a backup with that timestamp already exists,
+            # the script deletes the existing 'root' subvolume immediately.
+            btrfs subvolume delete $SV_WIPE_MOUNTED_PATH
+            echo "Deletion successful."
+        fi
     else
-        
-        echo "Duplicate timestamp found. Deleting old subvolume: $SV_WIPE_MOUNTED_PATH"
-        # If a backup with that timestamp already exists,
-        # the script deletes the existing 'root' subvolume immediately.
+        echo "Snapshot skipped. Deleting old subvolume directly: $SV_WIPE_MOUNTED_PATH"
         btrfs subvolume delete $SV_WIPE_MOUNTED_PATH
         echo "Deletion successful."
     fi
@@ -101,23 +106,28 @@ delete_subvolume_recursively() {
     echo "Deletion of $1 complete." >/dev/kmsg
 }
 
-# Find the single latest (newest) root backup snapshot
-latest_snapshot=$(find $SNAPSHOT_DIR_MNT_PATH/ -mindepth 1 -maxdepth 1 -type d | sort -r | head -n 1)
 
-# Only proceed with GC if there is at least one snapshot found.
-if [ -n "$latest_snapshot" ]; then
-    echo "Latest snapshot found: $latest_snapshot. Checking for expired backups."
-    
-    # Find all directories (snapshots) in 'old_roots' that are older than 30 days.
-    for i in $(find $SNAPSHOT_DIR_MNT_PATH/ -mindepth 1 -maxdepth 1 -mtime +30 | grep -v -e "$latest_snapshot"); do
+if $CREATE_SNAPSHOTS; then
+    # Find   the single latest (newest) root backup snapshot
+    latest_snapshot=$(find $SNAPSHOT_DIR_MNT_PATH/ -mindepth 1 -maxdepth 1 -type d | sort -r | head -n 1)
 
-        echo "Found expired subvolume for deletion: $i"
-        # Execute the recursive deletion function for the expired, non-latest snapshot.
-        delete_subvolume_recursively "$i"
-        echo "Expired subvolume deletion complete."
-    done
+    # Only proceed with GC if there is at least one snapshot found.
+    if [ -n "$latest_snapshot" ]; then
+        echo "Latest snapshot found: $latest_snapshot. Checking for expired backups."
+        
+        # Find all directories (snapshots) in 'old_roots' that are older than 30 days.
+        for i in $(find $SNAPSHOT_DIR_MNT_PATH/ -mindepth 1 -maxdepth 1 -mtime +30 | grep -v -e "$latest_snapshot"); do
+
+            echo "Found expired subvolume for deletion: $i"
+            # Execute the recursive deletion function for the expired, non-latest snapshot.
+            delete_subvolume_recursively "$i"
+            echo "Expired subvolume deletion complete."
+        done
+    else
+        echo "No snapshots found in $SNAPSHOT_DIR_MNT_PATH. Skipping garbage collection."
+    fi
 else
-    echo "No snapshots found in $SNAPSHOT_DIR_MNT_PATH. Skipping garbage collection."
+    echo "Garbage Collection skipped because snapshotting is disabled."
 fi
 
 ## --- Create New Root and Cleanup ---

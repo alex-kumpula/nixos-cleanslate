@@ -1,18 +1,9 @@
 { inputs, config, lib, ... }:
 {
-
-
-  # TODO: Make GC a separate service that runs after this one
-  # (but does not require it, in case this service fails for some reason)
-
-
-
-
   flake.modules.nixos.btrfs-rollback-on-boot =
   { lib, pkgs, config, ... }:
   let 
       cfg = config.btrfs-rollback-on-boot;
-
       rollbackScriptContent = builtins.readFile ./rollback.sh;
   in
   
@@ -45,6 +36,8 @@
 
                 SNAPSHOT_DIR="/snapshots"
                 SNAPSHOT_DIR_MNT_PATH="$BTRFS_MNT_POINT$SV_PERSIST_PATH_ON_DEVICE$SNAPSHOT_DIR"
+
+                CREATE_SNAPSHOTS=${serviceCfg.createSnapshots}
                 
 
               '' + rollbackScriptContent
