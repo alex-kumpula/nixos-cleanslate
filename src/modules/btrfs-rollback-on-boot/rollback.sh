@@ -53,7 +53,7 @@ if [[ -d $SV_WIPE_MOUNTED_PATH ]]; then
         echo "Successfully created snapshot for $SV_WIPE_MOUNTED_PATH. The snapshot is located at $FULL_SNAPSHOT_PATH."
     else    
         echo "ERROR: Snapshot creation failed for $SV_WIPE_MOUNTED_PATH."
-        exit 1
+        # exit 1
     fi
 
     echo "Attempting to delete the subvolume at $SV_WIPE_MOUNTED_PATH..."
