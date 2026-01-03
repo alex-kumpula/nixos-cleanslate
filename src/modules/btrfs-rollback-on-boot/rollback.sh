@@ -6,14 +6,12 @@
 $LOG_INFO="logger -t btrfs-rollback -p user.info"
 
 # Log a starting message to the kernel message buffer (kmsg), visible via dmesg.
-$LOG_INFO "btrfs-rollback-on-boot: Rolling back $SV_WIPE_NAME..." >/dev/kmsg
+echo "btrfs-rollback-on-boot: Rolling back $SV_WIPE_NAME..." >/dev/kmsg
 
 # --- Mount Btrfs Volumes ---
 
 $LOG_INFO "THIS IS A TEST"
 
-
-# echo all variables to kmsg
 $LOG_INFO "SV_WIPE_DEVICE = $SV_WIPE_DEVICE"
 $LOG_INFO "SV_WIPE_PATH_ON_DEVICE = $SV_WIPE_PATH_ON_DEVICE"
 $LOG_INFO "SV_WIPE_NAME = $SV_WIPE_NAME"
