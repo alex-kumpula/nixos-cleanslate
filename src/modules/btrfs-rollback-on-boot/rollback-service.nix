@@ -27,6 +27,10 @@
             StandardError = "journal+console";
             Type = "oneshot";
           };
+
+          startLimitIntervalSec = lib.mkDefault 0;
+          startLimitBurst = lib.mkDefault 5;
+
         }
 
       ) cfg.services;
