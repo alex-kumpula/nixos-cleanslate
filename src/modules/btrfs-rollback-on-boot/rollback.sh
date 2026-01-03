@@ -10,7 +10,8 @@ echo "btrfs-rollback-on-boot: Rolling back $SV_WIPE_NAME..." >/dev/kmsg
 
 # --- Mount Btrfs Volumes ---
 
-$LOG_INFO "THIS IS A TEST"
+$LOG_INFO "THIS IS A TEST logger"
+echo "THIS IS A TEST echo"
 
 # $LOG_INFO "SV_WIPE_DEVICE = $SV_WIPE_DEVICE"
 # $LOG_INFO "SV_WIPE_PATH_ON_DEVICE = $SV_WIPE_PATH_ON_DEVICE"
