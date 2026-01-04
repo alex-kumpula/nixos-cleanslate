@@ -32,7 +32,7 @@ echo "Attempting to mount $BTRFS_DEVICE at $BTRFS_MNT_POINT..."
 mount $BTRFS_DEVICE $BTRFS_MNT_POINT
 echo "Successfully mounted Btrfs volume."
 
-## --- Previous Root Subvolume Backup (The "Explosion") ---
+## --- Previous Subvolume Rollback ---
 
 echo "Checking for existing subvolume to wipe at $SV_WIPE_MOUNTED_PATH..."
 if [[ -e $SV_WIPE_MOUNTED_PATH ]]; then
@@ -110,7 +110,7 @@ btrfs subvolume create $SV_WIPE_MOUNTED_PATH
 echo "New subvolume created successfully."
     
 echo "Unmounting $BTRFS_MNT_POINT..."
-# Unmount the subvolum from the temporary mount point.
+# Unmount the main Btrfs volume from the temporary mount point.
 umount $BTRFS_MNT_POINT
 echo "Unmount successful."
 
