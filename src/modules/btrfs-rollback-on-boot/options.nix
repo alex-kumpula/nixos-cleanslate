@@ -64,11 +64,6 @@
                     type = lib.types.str;
                     description = "The path to the subvolume from the root of the Btrfs filesystem.";
                   };
-                  
-                  name = lib.mkOption {
-                    type = lib.types.str;
-                    description = "The name of the subvolume.";
-                  };
                 };
               };
             };
@@ -83,11 +78,6 @@
                   path = lib.mkOption {
                     type = lib.types.str;
                     description = "The path to the subvolume from the root of the Btrfs filesystem.";
-                  };
-                  
-                  name = lib.mkOption {
-                    type = lib.types.str;
-                    description = "The name of the subvolume.";
                   };
                 };
               };

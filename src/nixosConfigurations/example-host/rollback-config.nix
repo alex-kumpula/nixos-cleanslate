@@ -23,6 +23,8 @@
         # Optional: Control whether snapshots are created (default is true)
         createSnapshots = true;
 
+        garbageCollectSnapshots = false;
+
         snapshotRetentionAmountOfDays = 2;
         
         # --- Configuration for the Subvolume to be Wiped (The Root) ---
