@@ -17,6 +17,7 @@ echo "SV_PERSIST_MOUNTED_PATH = $SV_PERSIST_MOUNTED_PATH" # eg. /btrfs_rollback_
 echo "SNAPSHOT_DIR_MNT_PATH = $SNAPSHOT_DIR_MNT_PATH" # eg. /btrfs_rollback_mounts/root-wipe-service_mount/persistent/snapshots
 
 echo "CREATE_SNAPSHOTS = $CREATE_SNAPSHOTS"
+echo "GARBAGE_COLLECT_SNAPSHOTS = $GARBAGE_COLLECT_SNAPSHOTS"
 echo "SNAPSHOT_RETENTION_NUM_DAYS = $SNAPSHOT_RETENTION_NUM_DAYS"
 
 
@@ -75,24 +76,22 @@ else
     echo "Subvolume to wipe ($SV_WIPE_NAME) not found. Skipping backup."
 fi
 
-## --- Garbage Collection (GC) for Old Backups ---
+## --- Garbage Collection (GC) for old snapshots ---
 
-echo "Starting Garbage Collection for old snapshots..."
-
-# Recursively Garbage Collect: old_roots older than 30 days
-if $CREATE_SNAPSHOTS; then
-    # Find   the single latest (newest) root backup snapshot
+if $GARBAGE_COLLECT_SNAPSHOTS; then
+    echo "Starting Garbage Collection for snapshots older than $SNAPSHOT_RETENTION_NUM_DAYS days..."
+    # Find the single latest (newest) snapshot
     latest_snapshot=$(find $SNAPSHOT_DIR_MNT_PATH/ -mindepth 1 -maxdepth 1 -type d | sort -r | head -n 1)
 
-    # Only proceed with GC if there is at least one snapshot found.
+    # Only proceed with GC if there is at least one snapshot found
     if [ -n "$latest_snapshot" ]; then
         echo "Latest snapshot found: $latest_snapshot. Checking for expired backups."
         
-        # Find all directories (snapshots) in 'old_roots' that are older than SNAPSHOT_RETENTION_NUM_DAYS days.
+        # Find all directories (snapshots) that are older than SNAPSHOT_RETENTION_NUM_DAYS days
         for i in $(find $SNAPSHOT_DIR_MNT_PATH/ -mindepth 1 -maxdepth 1 -mtime +$SNAPSHOT_RETENTION_NUM_DAYS | grep -v -e "$latest_snapshot"); do
 
             echo "Found expired subvolume for deletion: $i"
-            # Recursively delete the expired, non-latest snapshot.
+            # Recursively delete the expired, non-latest snapshot
             btrfs subvolume delete -R "$i"
             echo "Expired subvolume deletion complete."
         done
@@ -100,18 +99,18 @@ if $CREATE_SNAPSHOTS; then
         echo "No snapshots found in $SNAPSHOT_DIR_MNT_PATH. Skipping garbage collection."
     fi
 else
-    echo "Garbage Collection skipped because snapshotting is disabled."
+    echo "Garbage Collection skipped because it is disabled."
 fi
 
-## --- Create New Root and Cleanup ---
+## --- Create New Subvolume and Cleanup ---
 
 echo "Attempting to create new subvolume at $SV_WIPE_MOUNTED_PATH..."
-# Create the new, clean 'root' Btrfs subvolume.
+# Create the new, clean Btrfs subvolume.
 btrfs subvolume create $SV_WIPE_MOUNTED_PATH
 echo "New subvolume created successfully."
     
 echo "Unmounting $BTRFS_MNT_POINT..."
-# Unmount the main Btrfs volume from the temporary mount point.
+# Unmount the subvolum from the temporary mount point.
 umount $BTRFS_MNT_POINT
 echo "Unmount successful."
 
