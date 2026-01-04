@@ -7,6 +7,8 @@
       cleanslate
     ];
 
-    specialArgs = { disk ? "/dev/vda" }: { inherit disk ; };
+    specialArgs = { 
+      disk = "/dev/vda";
+    };
   };
 }
