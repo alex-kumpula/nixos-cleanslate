@@ -31,10 +31,7 @@
         subvolumeToWipe = {
           
           # The path to the subvolume from the Btrfs root (ID 5)
-          path = "/root"; 
-          
-          # A simple name for internal reference (used in temp mount point names)
-          name = "root"; 
+          path = "/root";
         };
         
         # --- Configuration for the Persistence Subvolume (Snapshot Storage) ---
@@ -42,9 +39,6 @@
 
           # The path to the persistence subvolume from the Btrfs root (ID 5)
           path = "/persistent"; 
-          
-          # A simple name for internal reference
-          name = "persistent"; 
         };
       };
       

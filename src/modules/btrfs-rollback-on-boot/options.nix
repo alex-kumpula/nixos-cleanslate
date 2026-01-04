@@ -38,6 +38,11 @@
               '';
             };
 
+            snapshotOutputPath = lib.mkOption {
+              type = lib.types.str;
+              description = "The path to store the snapshots.";
+            };
+
             garbageCollectSnapshots = lib.mkOption {
               type = lib.types.bool;
               default = true;
