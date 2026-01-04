@@ -1,7 +1,7 @@
 { inputs, config, lib, ... }:
 {
   flake.modules.nixos.example-host =
-    { lib, pkgs, ... }:
+    { ... }:
     {
       imports = [
         inputs.impermanence.nixosModules.impermanence

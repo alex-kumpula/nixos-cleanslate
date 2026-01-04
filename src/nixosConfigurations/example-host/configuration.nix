@@ -1,10 +1,9 @@
 {
-  config,
   ...
 }:
 {
   flake.modules.nixos.example-host = 
-  { config, pkgs, ... }: 
+  { pkgs, ... }: 
   {
     # Bootloader.
     boot.loader.grub.enable = true;
