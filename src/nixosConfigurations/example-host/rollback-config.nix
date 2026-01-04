@@ -7,7 +7,13 @@
   { config, pkgs, ... }: 
   {
     btrfs-rollback-on-boot.enable = true;
+
+    # Needed as the rollback service is an initrd systemd service.
     boot.initrd.systemd.enable = true;
+
+    # Needed to ensure user home directories are properly made.
+    # See this issue: https://github.com/NixOS/nixpkgs/issues/6481#issuecomment-3381105884
+    # May be fixed in the future by: https://github.com/NixOS/nixpkgs/pull/223932
     services.userborn.enable = true;
 
     btrfs-rollback-on-boot.services = {

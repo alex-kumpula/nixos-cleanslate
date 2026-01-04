@@ -110,17 +110,22 @@
             btrfs-rollback-on-boot requires 'boot.initrd.systemd.enable = true;'
           '';
         }
-        {
-          assertion = config.services.userborn.enable;
-          message = ''
-            btrfs-rollback-on-boot requires 'services.userborn.enable = true;'
-
-            See https://github.com/NixOS/nixpkgs/issues/6481#issuecomment-3381105884 for more info.
-
-            Also see https://github.com/nikstur/userborn to learn more about Userborn.
-          '';
-        }
       ];
+
+      warnings = lib.optional (!config.services.userborn.enable) ''
+        btrfs-rollback-on-boot works best with 'services.userborn.enable = true;'
+
+        Without userborn, user directories inside /home may not be created automatically,
+        and may need to be created by the root user.
+
+        See:
+          https://github.com/NixOS/nixpkgs/issues/6481#issuecomment-3381105884
+          https://github.com/nikstur/userborn
+
+        This may be fixed in the future by:
+          https://github.com/NixOS/nixpkgs/pull/223932
+      '';
+
     };
 
   };
