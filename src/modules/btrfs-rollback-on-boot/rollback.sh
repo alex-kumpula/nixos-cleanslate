@@ -45,7 +45,7 @@ if [[ -e $SV_WIPE_MOUNTED_PATH ]]; then
         
         # Get the creation/modification time of the existing 'root' subvolume
         timestamp=$(date --date="@$(stat -c %Y $SV_WIPE_MOUNTED_PATH)" "+%Y-%m-%d_%H:%M:%S")
-        SNAPSHOT_NAME="snapshot-$SV_WIPE_NAME-$timestamp"
+        SNAPSHOT_NAME="snapshot-$timestamp"
         FULL_SNAPSHOT_PATH="$SNAPSHOT_DIR_MNT_PATH/$SNAPSHOT_NAME"
     
         echo "Generated Snapshot Path: $FULL_SNAPSHOT_PATH"
@@ -72,7 +72,7 @@ if [[ -e $SV_WIPE_MOUNTED_PATH ]]; then
         echo "Deletion successful."
     fi
 else
-    echo "Subvolume to wipe ($SV_WIPE_NAME) not found. Skipping backup."
+    echo "Subvolume to wipe ($SV_WIPE_MOUNTED_PATH) not found. Skipping backup."
 fi
 
 ## --- Garbage Collection (GC) for old snapshots ---

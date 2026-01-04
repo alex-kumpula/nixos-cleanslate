@@ -28,13 +28,6 @@
 
                 # Subvolume to wipe
                 SV_WIPE_PATH_ON_DEVICE="${serviceCfg.subvolumeToWipe.path}"
-                SV_WIPE_NAME = "${
-                  lib.last (
-                    lib.splitString "/" (
-                      lib.removeSuffix "/" serviceCfg.subvolumeToWipe.path
-                    )
-                  )
-                }"
                 SV_WIPE_MOUNTED_PATH="$BTRFS_MNT_POINT$SV_WIPE_PATH_ON_DEVICE"
                 
                 # Subvolume for persistence
