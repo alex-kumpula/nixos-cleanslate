@@ -11,7 +11,8 @@
       boot.initrd.systemd.services = lib.mapAttrs' (
         name: serviceCfg: lib.nameValuePair "${name}" {
           
-          wantedBy = ["initrd-root-device.target"];
+          # wantedBy = ["initrd-root-device.target"];
+          wantedBy = ["initrd-root-fs.target"];
           # wants = ["lvm2-activation.service"];
           # See https://github.com/nix-community/impermanence/issues/250#issuecomment-2603848867
           # after = ["lvm2-activation.service" "local-fs-pre.target" "cryptsetup.target"];
