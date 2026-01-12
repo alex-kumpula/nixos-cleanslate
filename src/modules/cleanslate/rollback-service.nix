@@ -14,7 +14,7 @@
           wantedBy = ["initrd-root-device.target"];
           wants = ["lvm2-activation.service"];
           # See https://github.com/nix-community/impermanence/issues/250#issuecomment-2603848867
-          after = ["lvm2-activation.service" "local-fs-pre.target"];
+          after = ["lvm2-activation.service" "local-fs-pre.target" "cryptsetup.target"];
           before = ["sysroot.mount"];
           # Run on cold boot only, never on resume from hibernation
           unitConfig = {
