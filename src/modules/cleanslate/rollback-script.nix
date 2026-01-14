@@ -12,7 +12,13 @@
 
       cleanslate = {
         rollbackServiceScripts = lib.mapAttrs' (
-          name: serviceCfg: lib.nameValuePair name (
+          name: serviceCfg: 
+          let 
+            safeName = lib.replaceStrings ["-"] ["_"] name;
+            mnt = "/cleanslate_mount_${safeName}";
+          in 
+          lib.nameValuePair name (
+            
             
             pkgs.writeShellScriptBin "${name}" (
               ''
@@ -22,10 +28,7 @@
 
                 SERVICE_NAME="${name}"
 
-                # BTRFS_MNT_POINT="/btrfs_rollback_mounts_${name}_mount"
-                BTRFS_MNT_POINT="/btrfs_temp"
-
-                echo "TEST: /btrfs_temp_${name}"
+                BTRFS_MNT_POINT="${mnt}"
 
                 # Subvolume to wipe
                 SV_WIPE_PATH_ON_DEVICE="${serviceCfg.subvolumeToWipe.path}"
@@ -42,7 +45,6 @@
                 GARBAGE_COLLECT_SNAPSHOTS=${if serviceCfg.garbageCollectSnapshots then "true" else "false"}
                 SNAPSHOT_RETENTION_NUM_DAYS=${builtins.toString serviceCfg.snapshotRetentionAmountOfDays}
                 
-
               '' + rollbackScriptContent
             )
           )
