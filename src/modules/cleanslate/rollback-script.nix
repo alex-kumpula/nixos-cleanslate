@@ -25,6 +25,8 @@
                 # BTRFS_MNT_POINT="/btrfs_rollback_mounts_${name}_mount"
                 BTRFS_MNT_POINT="/btrfs_temp"
 
+                echo "TEST: /btrfs_rollback_mounts_${name}_mount"
+
                 # Subvolume to wipe
                 SV_WIPE_PATH_ON_DEVICE="${serviceCfg.subvolumeToWipe.path}"
                 SV_WIPE_MOUNTED_PATH="$BTRFS_MNT_POINT$SV_WIPE_PATH_ON_DEVICE"
