@@ -22,7 +22,7 @@
 
                 SERVICE_NAME="${name}"
 
-                BTRFS_MNT_POINT="/btrfs_rollback_mounts/${name}_mount"
+                BTRFS_MNT_POINT="/btrfs_rollback_mounts_${name}_mount"
                 # BTRFS_MNT_POINT="/btrfs_temp"
 
                 # Subvolume to wipe
