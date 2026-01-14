@@ -9,9 +9,9 @@
     config = lib.mkIf cfg.enable {
 
       boot.initrd.systemd.mounts =
-        lib.mapAttrsToList (_: serviceCfg: {
+        lib.mapAttrsToList (name: serviceCfg: {
           what  = serviceCfg.btrfsDevice;
-          where = "/btrfs_tmp";
+          where = "/btrfs_rollback_mounts/${name}_mount";
           type  = "btrfs";
           options = "rw";
           wantedBy = [ "initrd.target" ];
@@ -23,7 +23,7 @@
         let
           mountUnit =
             lib.replaceStrings [ "/" ] [ "-" ]
-              (lib.removePrefix "/" "/btrfs_tmp")
+              (lib.removePrefix "/" "/btrfs_rollback_mounts/${name}_mount")
             + ".mount";
         in
         lib.nameValuePair "${name}" {
