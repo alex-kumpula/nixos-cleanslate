@@ -20,7 +20,7 @@ echo "SNAPSHOT_RETENTION_NUM_DAYS = $SNAPSHOT_RETENTION_NUM_DAYS"
 
 
 ## DEBUG
-sleep 5
+# sleep 5
 
 ## --- Prepare to Access Btrfs Volume ---
 
