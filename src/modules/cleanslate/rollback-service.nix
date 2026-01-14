@@ -11,7 +11,7 @@
       boot.initrd.systemd.mounts =
         lib.mapAttrsToList (name: serviceCfg: 
         let 
-          mnt = "/cleanslate_mount_${name}";
+          mnt = "/cleanslate_mount_rootWipeService";
           # mnt = "/btrfs_temp";
         in 
         {
@@ -29,7 +29,7 @@
           mnt = "/cleanslate_mount_${name}";
           # mnt = "/btrfs_temp";
           # mountUnit = lib.replaceStrings [ "/" ] [ "-" ] (lib.removePrefix "/" mnt) + ".mount";
-          mountUnit = "cleanslate_mount_root-wipe-service.mount";
+          mountUnit = "cleanslate_mount_rootWipeService.mount";
         in
         lib.nameValuePair "${name}" {
      
