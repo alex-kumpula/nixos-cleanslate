@@ -22,16 +22,22 @@ echo "SNAPSHOT_RETENTION_NUM_DAYS = $SNAPSHOT_RETENTION_NUM_DAYS"
 ## DEBUG
 # sleep 5
 
+
+
+
 ## --- Prepare to Access Btrfs Volume ---
 
-# Create a temporary mount point directory.
-mkdir -p $BTRFS_MNT_POINT
-echo "Created mount point directory: $BTRFS_MNT_POINT"
+# # Create a temporary mount point directory.
+# mkdir -p $BTRFS_MNT_POINT
+# echo "Created mount point directory: $BTRFS_MNT_POINT"
 
-# Mount the main Btrfs volume
-echo "Attempting to mount $BTRFS_DEVICE at $BTRFS_MNT_POINT..."
-mount $BTRFS_DEVICE $BTRFS_MNT_POINT
-echo "Successfully mounted Btrfs volume."
+# # Mount the main Btrfs volume
+# echo "Attempting to mount $BTRFS_DEVICE at $BTRFS_MNT_POINT..."
+# mount $BTRFS_DEVICE $BTRFS_MNT_POINT
+# echo "Successfully mounted Btrfs volume."
+
+
+
 
 ## --- Previous Subvolume Rollback ---
 
@@ -110,10 +116,13 @@ echo "Attempting to create new subvolume at $SV_WIPE_MOUNTED_PATH..."
 btrfs subvolume create $SV_WIPE_MOUNTED_PATH
 echo "New subvolume created successfully."
     
-echo "Unmounting $BTRFS_MNT_POINT..."
-# Unmount the main Btrfs volume from the temporary mount point.
-umount $BTRFS_MNT_POINT
-echo "Unmount successful."
+
+
+
+# echo "Unmounting $BTRFS_MNT_POINT..."
+# # Unmount the main Btrfs volume from the temporary mount point.
+# umount $BTRFS_MNT_POINT
+# echo "Unmount successful."
 
 # Log a successful completion message to the kernel message buffer.
 echo "$SERVICE_NAME: Finished btrfs rollback sequence!" >/dev/kmsg
