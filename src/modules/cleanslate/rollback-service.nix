@@ -12,7 +12,7 @@
         lib.mapAttrsToList (name: serviceCfg: 
         let 
           # mnt = "/btrfs_rollback_mounts_${name}_mount";
-          mnt = "/btrfs_temp";
+          mnt = "/btrfs_temp_${name}";
         in 
         {
           what  = serviceCfg.btrfsDevice;
@@ -27,7 +27,7 @@
         name: serviceCfg: 
         let
           # mnt = "/btrfs_rollback_mounts_${name}_mount";
-          mnt = "/btrfs_temp";
+          mnt = "/btrfs_temp_${name}";
           mountUnit = lib.replaceStrings [ "/" ] [ "-" ] (lib.removePrefix "/" mnt) + ".mount";
         in
         lib.nameValuePair "${name}" {
