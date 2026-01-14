@@ -26,6 +26,7 @@
             StandardOutput = "journal";
             StandardError = "journal";
             Type = "oneshot";
+            RemainAfterExit = true;
           };
 
         }
