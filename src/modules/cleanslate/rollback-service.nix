@@ -11,7 +11,7 @@
       boot.initrd.systemd.mounts =
         lib.mapAttrsToList (name: serviceCfg: {
           what  = serviceCfg.btrfsDevice;
-          where = "/btrfs_tmp";
+          where = "/btrfs_temp";
           type  = "btrfs";
           options = "rw";
           wantedBy = [ "initrd.target" ];
@@ -23,7 +23,7 @@
         let
           mountUnit =
             lib.replaceStrings [ "/" ] [ "-" ]
-              (lib.removePrefix "/" "/btrfs_tmp")
+              (lib.removePrefix "/" "/btrfs_temp")
             + ".mount";
         in
         lib.nameValuePair "${name}" {
