@@ -11,7 +11,8 @@
       boot.initrd.systemd.mounts =
         lib.mapAttrsToList (name: serviceCfg: 
         let 
-          mnt = "/btrfs_rollback_mounts_${name}_mount";
+          # mnt = "/btrfs_rollback_mounts_${name}_mount";
+          mnt = "/btrfs_temp";
         in 
         {
           what  = serviceCfg.btrfsDevice;
@@ -25,7 +26,8 @@
       boot.initrd.systemd.services = lib.mapAttrs' (
         name: serviceCfg: 
         let
-          mnt = "/btrfs_rollback_mounts_${name}_mount";
+          # mnt = "/btrfs_rollback_mounts_${name}_mount";
+          mnt = "/btrfs_temp";
           mountUnit = lib.replaceStrings [ "/" ] [ "-" ] (lib.removePrefix "/" mnt) + ".mount";
         in
         lib.nameValuePair "${name}" {
