@@ -25,10 +25,8 @@
       boot.initrd.systemd.services = lib.mapAttrs' (
         name: serviceCfg: 
         let
-          mountUnit =
-            lib.replaceStrings [ "/" ] [ "-" ]
-              (lib.removePrefix "/" "/btrfs_rollback_mounts_${name}_mount")
-            + ".mount";
+          mnt = "/btrfs_rollback_mounts_${name}_mount";
+          mountUnit = lib.replaceStrings [ "/" ] [ "-" ] (lib.removePrefix "/" mnt) + ".mount";
         in
         lib.nameValuePair "${name}" {
      
