@@ -38,8 +38,6 @@
           before = [ "sysroot.mount" ];
 
 
-
-
           # Run on cold boot only, never on resume from hibernation
           unitConfig = {
             ConditionKernelCommandLine = ["!resume="];
