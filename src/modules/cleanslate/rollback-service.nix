@@ -30,7 +30,7 @@
 
           after = [
             "cryptsetup.target"
-            "systemd-cryptsetup@cryptroot.service"
+            "systemd-cryptsetup@root-crypt.service"
             "lvm2-activation.service"
             "local-fs-pre.target"
           ];
