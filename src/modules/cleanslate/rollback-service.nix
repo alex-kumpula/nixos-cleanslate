@@ -8,47 +8,44 @@
   {
     config = lib.mkIf cfg.enable {
 
+      boot.initrd.systemd.mounts =
+        lib.mapAttrsToList (_: serviceCfg: {
+          what  = serviceCfg.btrfsDevice;
+          where = "/btrfs_tmp";
+          type  = "btrfs";
+          options = "rw";
+          wantedBy = [ "initrd.target" ];
+        }) cfg.services;
+
+
       boot.initrd.systemd.services = lib.mapAttrs' (
-        name: serviceCfg: lib.nameValuePair "${name}" {
-          
-          # wantedBy = ["initrd-root-device.target" "initrd.target"];
-          # # wants = ["lvm2-activation.service"];
-          # # See https://github.com/nix-community/impermanence/issues/250#issuecomment-2603848867
-          # after = ["lvm2-activation.service" "local-fs-pre.target" "cryptsetup.target"];
-          # before = ["sysroot.mount"];
-
-
-
+        name: serviceCfg: 
+        let
+          mountUnit =
+            lib.replaceStrings [ "/" ] [ "-" ]
+              (lib.removePrefix "/" "/btrfs_tmp")
+            + ".mount";
+        in
+        lib.nameValuePair "${name}" {
+     
           enableStrictShellChecks = false;
 
           wantedBy = [ "initrd-root-device.target" ];
+          before   = [ "sysroot.mount" ];
 
-          wants = [
-            "cryptsetup.target"
-            "lvm2-activation.service"
-          ];
+          requires = [ mountUnit ];
+          after    = [ mountUnit ];
 
-          after = [
-            "cryptsetup.target"
-            "systemd-cryptsetup@root-crypt.service"
-            "lvm2-activation.service"
-            "local-fs-pre.target"
-          ];
-
-          before = [ "sysroot.mount" ];
-
-
-          # Run on cold boot only, never on resume from hibernation
           unitConfig = {
-            ConditionKernelCommandLine = ["!resume="];
-            RequiresMountsFor = [serviceCfg.btrfsDevice];
+            # Run on cold boot only, never on resume from hibernation
+            ConditionKernelCommandLine = [ "!resume=" ];
           };
+
           serviceConfig = {
             ExecStart = "${cfg.rollbackServiceScripts.${name}}/bin/${name}";
             StandardOutput = "journal";
             StandardError = "journal";
             Type = "oneshot";
-            RemainAfterExit = true;
           };
 
         }
