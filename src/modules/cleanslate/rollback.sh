@@ -48,6 +48,9 @@ if [[ -e $SV_WIPE_MOUNTED_PATH ]]; then
             # Set the snapshot to read-only to prevent modifications.
             echo "Setting snapshot to read-only: $FULL_SNAPSHOT_PATH"
             btrfs property set -ts "$FULL_SNAPSHOT_PATH" ro true
+
+            echo btrfs subvolume list -o "$BTRFS_MNT_POINT"
+
             # Also set all nested subvolumes within the snapshot to read-only.
             btrfs subvolume list -o "$BTRFS_MNT_POINT" | grep "$(basename "$FULL_SNAPSHOT_PATH")" | awk '{print $NF}' | while read -r subvol; do
                 echo "Setting nested subvolume to RO: $BTRFS_MNT_POINT/$subvol"
