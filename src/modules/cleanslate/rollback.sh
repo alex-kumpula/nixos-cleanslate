@@ -111,4 +111,7 @@ echo "New subvolume created successfully."
 # Log a successful completion message to the kernel message buffer.
 echo "$SERVICE_NAME: Finished btrfs rollback sequence!" >/dev/kmsg
 
+# DEBUG
+yazi
+
 # --- END OF SCRIPT ---
