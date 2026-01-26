@@ -50,10 +50,10 @@ if [[ -e $SV_WIPE_MOUNTED_PATH ]]; then
             btrfs property set -ts "$FULL_SNAPSHOT_PATH" ro true
 
             echo "DEBUG: Result of btrfs subvolume list:"
-            btrfs subvolume list -o "$BTRFS_MNT_POINT"
+            btrfs subvolume list "$BTRFS_MNT_POINT"
 
             # Also set all nested subvolumes within the snapshot to read-only.
-            btrfs subvolume list -o "$BTRFS_MNT_POINT" | grep "$(basename "$FULL_SNAPSHOT_PATH")" | awk '{print $NF}' | while read -r subvol; do
+            btrfs subvolume list "$BTRFS_MNT_POINT" | grep "$(basename "$FULL_SNAPSHOT_PATH")" | awk '{print $NF}' | while read -r subvol; do
                 echo "Setting nested subvolume to RO: $BTRFS_MNT_POINT/$subvol"
                 btrfs property set -ts "$BTRFS_MNT_POINT/$subvol" ro true
             done
