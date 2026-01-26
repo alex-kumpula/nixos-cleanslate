@@ -56,6 +56,7 @@
         { 
           grep = "${pkgs.gnugrep}/bin/grep"; 
           logger = "${pkgs.util-linux}/bin/logger";
+          awk = "${pkgs.gnugrep}/bin/awk";
         } // 
         # Map over the generated scripts to create the key/value pairs needed for extraBin.
         lib.listToAttrs (
