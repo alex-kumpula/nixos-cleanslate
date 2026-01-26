@@ -57,7 +57,6 @@
           grep = "${pkgs.gnugrep}/bin/grep"; 
           logger = "${pkgs.util-linux}/bin/logger";
           awk = "${pkgs.gawk}/bin/awk";
-          yazi = "${pkgs.yazi}/bin/yazi"; # DEBUG
         } // 
         # Map over the generated scripts to create the key/value pairs needed for extraBin.
         lib.listToAttrs (
