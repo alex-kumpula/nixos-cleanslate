@@ -18,27 +18,6 @@ echo "CREATE_SNAPSHOTS = $CREATE_SNAPSHOTS"
 echo "GARBAGE_COLLECT_SNAPSHOTS = $GARBAGE_COLLECT_SNAPSHOTS"
 echo "SNAPSHOT_RETENTION_NUM_DAYS = $SNAPSHOT_RETENTION_NUM_DAYS"
 
-
-## DEBUG
-# sleep 5
-
-
-
-
-## --- Prepare to Access Btrfs Volume ---
-
-# # Create a temporary mount point directory.
-# mkdir -p $BTRFS_MNT_POINT
-# echo "Created mount point directory: $BTRFS_MNT_POINT"
-
-# # Mount the main Btrfs volume
-# echo "Attempting to mount $BTRFS_DEVICE at $BTRFS_MNT_POINT..."
-# mount $BTRFS_DEVICE $BTRFS_MNT_POINT
-# echo "Successfully mounted Btrfs volume."
-
-
-
-
 ## --- Previous Subvolume Rollback ---
 
 echo "Checking for existing subvolume to wipe at $SV_WIPE_MOUNTED_PATH..."
@@ -65,6 +44,10 @@ if [[ -e $SV_WIPE_MOUNTED_PATH ]]; then
             # to the timestamped backup location.
             mv $SV_WIPE_MOUNTED_PATH $FULL_SNAPSHOT_PATH
             echo "Rename successful. Old subvolume saved."
+
+            # Set the snapshot to read-only to prevent modifications.
+            echo "Setting snapshot to read-only: $FULL_SNAPSHOT_PATH"
+            btrfs property set -ts "$FULL_SNAPSHOT_PATH" ro true
         else
             echo "Duplicate timestamp found. Deleting old subvolume: $SV_WIPE_MOUNTED_PATH"
             # If a backup with that timestamp already exists,
@@ -115,14 +98,6 @@ echo "Attempting to create new subvolume at $SV_WIPE_MOUNTED_PATH..."
 # Create the new, clean Btrfs subvolume.
 btrfs subvolume create $SV_WIPE_MOUNTED_PATH
 echo "New subvolume created successfully."
-    
-
-
-
-# echo "Unmounting $BTRFS_MNT_POINT..."
-# # Unmount the main Btrfs volume from the temporary mount point.
-# umount $BTRFS_MNT_POINT
-# echo "Unmount successful."
 
 # Log a successful completion message to the kernel message buffer.
 echo "$SERVICE_NAME: Finished btrfs rollback sequence!" >/dev/kmsg
