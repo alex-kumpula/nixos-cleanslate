@@ -48,6 +48,11 @@ if [[ -e $SV_WIPE_MOUNTED_PATH ]]; then
             # Set the snapshot to read-only to prevent modifications.
             echo "Setting snapshot to read-only: $FULL_SNAPSHOT_PATH"
             btrfs property set -ts "$FULL_SNAPSHOT_PATH" ro true
+            # Also set all nested subvolumes within the snapshot to read-only.
+            btrfs subvolume list -o "$BTRFS_MNT_POINT" | grep "$(basename "$FULL_SNAPSHOT_PATH")" | awk '{print $NF}' | while read -r subvol; do
+                echo "Setting nested subvolume to RO: $BTRFS_MNT_POINT/$subvol"
+                btrfs property set -ts "$BTRFS_MNT_POINT/$subvol" ro true
+            done
         else
             echo "Duplicate timestamp found. Deleting old subvolume: $SV_WIPE_MOUNTED_PATH"
             # If a backup with that timestamp already exists,
