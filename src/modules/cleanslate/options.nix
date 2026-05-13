@@ -109,13 +109,13 @@
 
                   snapshotPath = lib.mkOption {
                     type = lib.types.str;
-                    default = "/persistent/snapshots/pristine-boot";
+                    default = "/pristine-boot";
                     description = ''
                       The path to store the snapshot. 
                       Relative to the root of the persistent subvolume.
                     '';
                   };
-                  
+
                 };
               };
               default = {};
