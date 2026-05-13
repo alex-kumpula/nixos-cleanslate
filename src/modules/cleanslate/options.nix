@@ -118,7 +118,10 @@
 
                 };
               };
-              default = {};
+              default = {
+                enable = true;
+                snapshotPath = "/pristine-boot";
+              };
             };
 
           };
