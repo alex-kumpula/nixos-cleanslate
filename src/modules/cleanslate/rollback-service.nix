@@ -61,7 +61,11 @@
 
         }
 
-      ) cfg.services;
+      ) (
+          lib.filterAttrs (_: serviceCfg:
+            serviceCfg.enable
+          ) cfg.services 
+        );
 
     };
   };
