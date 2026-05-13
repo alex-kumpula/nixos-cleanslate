@@ -24,8 +24,7 @@
               RemainAfterExit = false;
               ExecStart = pkgs.writeShellScript "pristine-boot-snapshot" ''
                 set -euo pipefail
-                SNAPSHOT_TARGET="${cfg.pristineBootSnapshot.snapshotPath}"
-                KEEP_HISTORY=${if cfg.pristineBootSnapshot.keepHistory then "true" else "false"}
+                SNAPSHOT_TARGET="${serviceCfg.pristineBootSnapshot.snapshotPath}"
 
                 mkdir -p "$(dirname "$SNAPSHOT_TARGET")"
 
