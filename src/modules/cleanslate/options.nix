@@ -27,7 +27,10 @@
 
             btrfsDevice = lib.mkOption {
               type = lib.types.str;
-              description = "The device containing the root of the Btrfs filesystem.";
+              description = ''
+                The device containing the Btrfs filesystem.
+                This must be set.
+              '';
             };
 
             createSnapshots = lib.mkOption {
@@ -40,6 +43,7 @@
 
             snapshotOutputPath = lib.mkOption {
               type = lib.types.str;
+              default = "/root-snapshots";
               description = ''
                 The path to store the snapshots. 
                 Relative to the root of the persistent subvolume.
@@ -90,6 +94,33 @@
                 };
               };
             };
+
+            pristineBootSnapshot = lib.mkOption {
+              type = lib.types.submodule {
+                options = {
+
+                  enable = lib.mkOption {
+                    type = lib.types.bool;
+                    default = true;
+                    description = ''
+                      Enable taking a snapshot of / immediately after boot.
+                    '';
+                  };
+
+                  snapshotPath = lib.mkOption {
+                    type = lib.types.str;
+                    default = "/persistent/snapshots/pristine-boot";
+                    description = ''
+                      The path to store the snapshot. 
+                      Relative to the root of the persistent subvolume.
+                    '';
+                  };
+                  
+                };
+              };
+              default = {};
+            };
+
           };
         });
       };
