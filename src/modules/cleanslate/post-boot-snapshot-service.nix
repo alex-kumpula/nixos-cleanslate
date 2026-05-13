@@ -39,7 +39,12 @@
 
           }
 
-      ) cfg.services;
+      ) (
+          lib.filterAttrs (_: serviceCfg:
+            serviceCfg.enable &&
+            serviceCfg.postBootSnapshot.enable
+          ) cfg.services 
+        );
 
     };
   };
