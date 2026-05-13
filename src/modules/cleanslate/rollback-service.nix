@@ -61,10 +61,10 @@
 
         }
 
-      ) lib.filterAttrs (_: serviceCfg:
+      ) (lib.filterAttrs (_: serviceCfg:
           serviceCfg.enable &&
           serviceCfg.postBootSnapshot.enable
-        ) cfg.services;
+        )) cfg.services;
     };
 
   };
