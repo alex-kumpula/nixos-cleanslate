@@ -10,9 +10,9 @@
 
       systemd.services = lib.mapAttrs' (
         name: serviceCfg: 
-          lib.nameValuePair "${name}-pristine-boot-snapshot" {
+          lib.nameValuePair "${name}-post-boot-snapshot" {
 
-            description = "Create a read‑only snapshot of the pristine boot root for change detection";
+            description = "Create a read‑only snapshot of the post-boot root for change detection";
             after = [ "multi-user.target" "local-fs.target" ];
             requires = [ "multi-user.target" ];
             wantedBy = [ "multi-user.target" ];
@@ -22,9 +22,9 @@
             serviceConfig = {
               Type = "oneshot";
               RemainAfterExit = false;
-              ExecStart = pkgs.writeShellScript "pristine-boot-snapshot" ''
+              ExecStart = pkgs.writeShellScript "post-boot-snapshot" ''
                 set -euo pipefail
-                SNAPSHOT_TARGET="${serviceCfg.pristineBootSnapshot.snapshotPath}"
+                SNAPSHOT_TARGET="${serviceCfg.postBootSnapshot.snapshotPath}"
 
                 mkdir -p "$(dirname "$SNAPSHOT_TARGET")"
 
@@ -33,7 +33,7 @@
                 fi
                 ${pkgs.btrfs-progs}/bin/btrfs subvolume snapshot -r / "$SNAPSHOT_TARGET"
 
-                echo "Pristine boot snapshot created at $SNAPSHOT_TARGET"
+                echo "Post-boot snapshot created at $SNAPSHOT_TARGET"
               '';
             };
 

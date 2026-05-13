@@ -95,13 +95,12 @@
               };
             };
 
-            pristineBootSnapshot = lib.mkOption {
+            postBootSnapshot = lib.mkOption {
               type = lib.types.submodule {
                 options = {
 
                   enable = lib.mkOption {
                     type = lib.types.bool;
-                    default = true;
                     description = ''
                       Enable taking a snapshot of / immediately after boot.
                     '';
@@ -109,10 +108,9 @@
 
                   snapshotPath = lib.mkOption {
                     type = lib.types.str;
-                    default = "/pristine-boot";
                     description = ''
                       The path to store the snapshot. 
-                      Relative to the root of the persistent subvolume.
+                      Relative to the root of the linux system.
                     '';
                   };
 
@@ -120,7 +118,7 @@
               };
               default = {
                 enable = true;
-                snapshotPath = "/pristine-boot";
+                snapshotPath = "/post-boot-snapshot";
               };
             };
 
